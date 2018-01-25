@@ -1,4 +1,4 @@
-from container.local_data_storage import LocalDataStorage
+from executable_container.local_data_storage import LocalDataStorage
 
 
 def test_interface():
