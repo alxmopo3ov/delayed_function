@@ -18,9 +18,6 @@ class DependencyGraph(SingletonBase, nx.DiGraph):
             assert set(self.predecessors(n)).\
                 union(set(self.successors(n))).\
                 issubset(self.lazy_values), "All neighbours of lazy_caller nodes must be lazy_values"
-        for n in self.lazy_values:
-            assert len(dependency_graph.predecessors(n)) == 1, \
-                "All lazy values must have exactly one caller predecessor which will evaluate them"
 
     def clear(self):
         self.lazy_callers = set()
