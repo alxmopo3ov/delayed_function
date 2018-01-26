@@ -9,16 +9,16 @@ from graph.dependency_graph import register_function_call, dependency_graph_cont
 from utils.type_check import do_type_check
 
 
-LAZY_ENABLED = False
+class LazyFlagsHandler(object):
+    LAZY_ENABLED = False
 
 
 @contextlib.contextmanager
 def build_dependency_graph(dependency_graph_id):
-    global LAZY_ENABLED
-    LAZY_ENABLED = True
+    LazyFlagsHandler.LAZY_ENABLED = True
     with dependency_graph_context(dependency_graph_id):
         yield
-    LAZY_ENABLED = False
+        LazyFlagsHandler.LAZY_ENABLED = False
 
 
 def generate_lazy_outputs(output_types):
@@ -45,7 +45,7 @@ def lazy_function(outputs, inputs, container_params=None, environment_params=Non
         @functools.wraps(func)
         def lazy_function_wrapper(*args, **kwargs):
             do_type_check(func, args, kwargs, contract_kwargs)
-            if LAZY_ENABLED:
+            if LazyFlagsHandler.LAZY_ENABLED:
                 func_args = inspect.getcallargs(func, *args, **kwargs)
 
                 lazy_inputs = generate_lazy_inputs(func_args)

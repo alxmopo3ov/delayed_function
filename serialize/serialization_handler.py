@@ -1,20 +1,18 @@
 from utils.mro import get_nearest_class
 from serialize.default_serializer import DefaultSerializer
 from types_lib.file_path import FilePath, FilePathSerializer
-from utils.singleton import SingletonBase
 
 
-class SerializationHandler(SingletonBase):
+class SerializationHandler(object):
     """
     This class just implements interfaces for data serialization-deserialization. Generally, almost everything
     can be serialized-deserialized via cloudpickle library, but this is very inconvenient when launching in
     some cloud environment: you will not be able to see simple outputs like dicts or strings in the interface
     """
-    def __init__(self):
-        self.serialization_hooks = {
-            object: DefaultSerializer(),
-            FilePath: FilePathSerializer()
-        }
+    serialization_hooks = {
+        object: DefaultSerializer(),
+        FilePath: FilePathSerializer()
+    }
 
     def add_serialization_hook(self, serialization_type, serializer):
         if serialization_type in {object, FilePath}:
