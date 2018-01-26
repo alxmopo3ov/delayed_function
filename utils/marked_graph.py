@@ -38,38 +38,15 @@ def mark_bfs(G, source):
         n.bfs_mark = max_mark - n.bfs_mark
 
 
-# seems to be tested too!
-def mark_dfs(G, source, normalize=True):
+def mark_dfs(G, normalize=True):
     marks_dict = {}
-    marks_dict = {i: 0 for i in range(max([n.bfs_mark for n in G]) + 1)}
-
-    visited = set()
-
-    def _mark_dfs(G, source, rank=0):
-        local_rank = marks_dict[rank]
-        source.set_dfs_mark(local_rank)
-        marks_dict[rank] += 1
-        visited.add(source)
-        for n in G.successors(source):
-            if n not in visited:
-                _mark_dfs(G, n, rank + 1)
-
-    _mark_dfs(G, source)
+    for n in nx.dfs_postorder_nodes(G):
+        n.set_dfs_mark(marks_dict.setdefault(n.bfs_mark, 0))
+        marks_dict[n.bfs_mark] += 1
 
     if normalize:
-        total_max_rank = max(n.dfs_mark for n in G)
-        visited = set()
-
-        def _normalize_dfs(G, source, rank=0):
-            local_max_rank = marks_dict[rank]
-            new_mark = total_max_rank / (local_max_rank + 1) * (source.dfs_mark + 1)
-            source.dfs_mark = new_mark
-            visited.add(source)
-            for n in G.successors(source):
-                if n not in visited:
-                    _normalize_dfs(G, n, rank + 1)
-
-        _normalize_dfs(G, source)
+        for node in G:
+            node.dfs_mark = 1.0 / (marks_dict[node.bfs_mark] + 1.0) * (node.dfs_mark + 1.0)
 
 
 def create_marked_graph(basic_graph, normalize=True):
@@ -87,7 +64,7 @@ def create_marked_graph(basic_graph, normalize=True):
     G.add_edges_from([(fake_root, p) for p in nodes_without_predecessors])
 
     mark_bfs(G, fake_root)
-    mark_dfs(G, fake_root, normalize=normalize)
+    mark_dfs(G, normalize=normalize)
 
     pos = {n: (n.dfs_mark, n.bfs_mark) for n in G}
     pos.pop(fake_root)
