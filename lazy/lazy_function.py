@@ -1,12 +1,26 @@
 import functools
 import inspect
+import contextlib
 from copy import deepcopy
 from lazy.lazy_value import get_lazy_value_type, LazyValueBase
-from graph.dependency_graph import register_function_call
+from graph.dependency_graph import register_function_call, dependency_graph_context
 from lazy.lazy_caller import generate_lazy_function_call
 from utils.type_check import do_type_check
 from lazy.lazy_utils import check_all_are_types, validate_function, convert_to_python_return
 from serialize.initialized_value_storage import initialized_value_storage
+
+
+# be default, we do not do any lazy evaluation so decorated functions can be used as usual
+LAZY_ENABLED = False
+
+
+@contextlib.contextmanager
+def build_dependency_graph(dependency_graph_id):
+    global LAZY_ENABLED
+    LAZY_ENABLED = True
+    with dependency_graph_context(dependency_graph_id):
+        yield
+    LAZY_ENABLED = False
 
 
 def generate_lazy_outputs(output_types):
@@ -39,18 +53,24 @@ def lazy_function(outputs, inputs, container_params=None, environment_params=Non
         @functools.wraps(func)
         def lazy_function_wrapper(*args, **kwargs):
             do_type_check(func, args, kwargs, contract_kwargs)
-            func_args = inspect.getcallargs(func, *args, **kwargs)
+            if LAZY_ENABLED:
+                func_args = inspect.getcallargs(func, *args, **kwargs)
 
-            lazy_inputs = generate_lazy_inputs(func_args)
-            lazy_func = generate_lazy_function_call(func)
-            lazy_outputs = generate_lazy_outputs(outputs)
+                lazy_inputs = generate_lazy_inputs(func_args)
+                lazy_func = generate_lazy_function_call(lazy_function_wrapper)
+                lazy_outputs = generate_lazy_outputs(outputs)
 
-            register_function_call(lazy_inputs, lazy_func, lazy_outputs)
+                register_function_call(lazy_inputs, lazy_func, lazy_outputs)
 
-            return convert_to_python_return(lazy_outputs)
+                return convert_to_python_return(lazy_outputs)
+            else:
+                return func(*args, **kwargs)
 
         lazy_function_wrapper.container_params = deepcopy(container_params)
         lazy_function_wrapper.environment_params = deepcopy(environment_params)
+        lazy_function_wrapper.inputs = deepcopy(inputs)
+        lazy_function_wrapper.outputs = deepcopy(outputs)
+        lazy_function_wrapper.func = func
         return lazy_function_wrapper
 
     return inner_decorator

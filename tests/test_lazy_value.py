@@ -1,5 +1,5 @@
 from lazy.lazy_value import LazyValueBase, get_lazy_value_type
-from graph.dependency_graph import dependency_graph
+from graph.dependency_graph import H
 import pytest
 import contracts
 
@@ -11,8 +11,8 @@ def lazy_str():
 
 def test_lazy_value():
     v = LazyValueBase()
-    assert v in dependency_graph
-    assert v in dependency_graph.lazy_values
+    assert v in H.dependency_graph
+    assert v in H.dependency_graph.lazy_values
 
 
 def test_get_lazy_value_has_value_type(lazy_str):

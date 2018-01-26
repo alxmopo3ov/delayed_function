@@ -1,16 +1,16 @@
-from graph.dependency_graph import dependency_graph, register_lazy_value_node, \
+from graph.dependency_graph import H, register_lazy_value_node, \
     register_function_call, register_lazy_caller_node
 import pytest
 
 
 @pytest.yield_fixture()
-def clear_graph():
-    dependency_graph.clear()
-    yield
-    dependency_graph.clear()
+def dependency_graph():
+    H.dependency_graph.clear()
+    yield H.dependency_graph
+    H.dependency_graph.clear()
 
 
-def test_clear(clear_graph):
+def test_clear(dependency_graph):
     register_lazy_caller_node(1)
     register_lazy_value_node(2)
     dependency_graph.clear()
@@ -21,20 +21,20 @@ def test_clear(clear_graph):
     assert register_lazy_caller_node(1) == 0
 
 
-def test_register_lazy_value(clear_graph):
+def test_register_lazy_value(dependency_graph):
     register_lazy_value_node(1)
     assert 1 in dependency_graph.lazy_values
     assert 1 in dependency_graph.nodes()
 
 
-def test_register_lazy_caller(clear_graph):
+def test_register_lazy_caller(dependency_graph):
     res = register_lazy_caller_node(1)
     assert 1 in dependency_graph.lazy_callers
     assert 1 in dependency_graph.nodes()
     assert res == 0
 
 
-def test_register_multiple_callers(clear_graph):
+def test_register_multiple_callers(dependency_graph):
     res1 = register_lazy_caller_node(1)
     res2 = register_lazy_caller_node(2)
     res3 = register_lazy_caller_node(3)
@@ -49,7 +49,7 @@ def test_register_multiple_callers(clear_graph):
     assert res3 == 2
 
 
-def test_register_function_call(clear_graph):
+def test_register_function_call(dependency_graph):
     inputs = dict(x=1, y=2, z=3)
     outputs = (4, 5)
     for x in tuple(inputs.values()) + outputs:
@@ -68,11 +68,11 @@ def test_register_function_call(clear_graph):
     )
 
 
-def test_empty_graph_validation(clear_graph):
+def test_empty_graph_validation(dependency_graph):
     dependency_graph.validate()
 
 
-def test_wrong_call_graph_validation(clear_graph):
+def test_wrong_call_graph_validation(dependency_graph):
     register_lazy_caller_node(1)
     register_lazy_caller_node(2)
     dependency_graph.add_edge(1, 2)
@@ -80,7 +80,7 @@ def test_wrong_call_graph_validation(clear_graph):
         dependency_graph.validate()
 
 
-def test_wrong_value_graph_validation(clear_graph):
+def test_wrong_value_graph_validation(dependency_graph):
     register_lazy_value_node(1)
     register_lazy_value_node(2)
     dependency_graph.add_edge(1, 2)

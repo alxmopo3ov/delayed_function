@@ -1,5 +1,5 @@
 import networkx as nx
-from graph.dependency_graph import dependency_graph
+from graph.dependency_graph import H
 
 
 class ContainerGraphOutputNode(object):
@@ -27,6 +27,7 @@ def convert_dependency_graph_to_container_graph():
     to cloud system
     :return: 
     """
+    dependency_graph = H.dependency_graph
     dependency_graph.validate()
     G = nx.DiGraph()
     for n in dependency_graph.lazy_values:

@@ -1,6 +1,6 @@
 from graph.container_graph import convert_dependency_graph_to_container_graph
 from graph.dependency_graph import register_lazy_value_node, register_lazy_caller_node, register_function_call, \
-    dependency_graph
+    H
 import pytest
 import networkx as nx
 
@@ -17,7 +17,7 @@ class ValueTypedNode(object):
 
 @pytest.yield_fixture()
 def build_graph():
-    dependency_graph.clear()
+    H.dependency_graph.clear()
     nodes = {}
     caller_nodes = [101, 102, 103, 70, 104, 105, 106, 71, 73, 72]
     for i in range(1, 13):

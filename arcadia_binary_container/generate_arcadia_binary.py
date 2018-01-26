@@ -8,8 +8,7 @@ auto_ml_dirname = 'auto_ml_executable_dir'
 nirvana_auto_ml_container_program_name = 'nirvana_auto_ml_container'
 
 
-ya_make_template = """
-PROGRAM({program_name})
+ya_make_template = """PROGRAM({program_name})
 
 OWNER({owner})
 
@@ -23,13 +22,12 @@ PEERDIR(
 )
 
 END()
-
 """
 
 
-executable_template = """
-import {function_file}
+executable_template = """import {function_file}
 from {auto_ml_root}.environment import Environment
+from {auto_ml_root}.executable_container.container_factory import build_container
 
 if __name__ == "__main__":
     env = Environment()
@@ -37,7 +35,6 @@ if __name__ == "__main__":
     function_name = env.function_name
     container = build_container(container_type, {function_file}.{function_name})
     container.run()
-
 """
 
 
@@ -94,6 +91,6 @@ def generate_arcadia_binary_dir(func, ignore_existing=False):
 
     package = fill_package_template(dirname, nirvana_auto_ml_container_program_name)
     with open(os.path.join(dirname, 'package.json'), 'wt') as f:
-        json.dump(package, f)
+        f.write(json.dumps(package) + '\n')
 
     return dirname

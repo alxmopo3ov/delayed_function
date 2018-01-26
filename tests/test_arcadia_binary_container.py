@@ -7,9 +7,9 @@ import os
 import getpass
 
 
-executable_reference = """
-import {tempdir}
+executable_reference = """import {tempdir}
 from some_test_root.environment import Environment
+from some_test_root.executable_container.container_factory import build_container
 
 if __name__ == "__main__":
     env = Environment()
@@ -17,11 +17,9 @@ if __name__ == "__main__":
     function_name = env.function_name
     container = build_container(container_type, {tempdir}.testing_function)
     container.run()
-
 """
 
-ya_make_reference = """
-PROGRAM(nirvana_auto_ml_container)
+ya_make_reference = """PROGRAM(nirvana_auto_ml_container)
 
 OWNER({owner})
 
@@ -35,7 +33,6 @@ PEERDIR(
 )
 
 END()
-
 """
 
 
