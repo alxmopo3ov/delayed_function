@@ -20,7 +20,7 @@ def run_local(dependency_graph_id):
         reversed_graph.add_nodes_from(computation_graph.nodes())
         reversed_graph.add_edges_from((y, x) for x, y in computation_graph.edges())
 
-        # iterate over lazy callers
+        # iterate over delayed callers
         for node in nx.dfs_postorder_nodes(reversed_graph):
             inputs_dict = {H.dependency_graph.get_edge_data(inp, node)['input_name']: inp
                            for inp in H.dependency_graph.predecessors(node)}

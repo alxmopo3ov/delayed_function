@@ -5,13 +5,13 @@ from abc import abstractmethod
 
 
 class ContainerBase(ABCProp):
-    def __init__(self, lazy_function):
+    def __init__(self, delayed_function):
         """
-        :param lazy_function: function wrapped with @lazy_function
+        :param delayed_function: function wrapped with @delayed_function
         """
-        self.inputs = lazy_function.inputs
-        self.func = lazy_function.func
-        self.outputs = lazy_function.outputs
+        self.inputs = delayed_function.inputs
+        self.func = delayed_function.func
+        self.outputs = delayed_function.outputs
 
     @abstractmethod
     def load_inputs(self, local_data_storage):

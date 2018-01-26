@@ -1,4 +1,4 @@
-from lazy.lazy_utils import validate_function, convert_to_python_return, check_all_are_types
+from delayed.delayed_utils import validate_function, convert_to_python_return, check_all_are_types
 import pytest
 
 

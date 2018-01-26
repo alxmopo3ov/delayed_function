@@ -1,7 +1,7 @@
 from executable_container.local_container import LocalContainer
 from graph.dependency_graph import dependency_graph_context, register_function_call
-from lazy.lazy_caller import LazyCaller
-from lazy.lazy_value import get_lazy_value_type
+from delayed.delayed_caller import DelayedCaller
+from delayed.delayed_value import get_delayed_value_type
 from serialize.serialization_handler import SerializationHandler
 import pytest
 from numbers import Number
@@ -26,7 +26,7 @@ def func3(x, y):
     (dict(x=Number, y=Number), func3, ())
 ]
 )
-def lazy_function(request):
+def delayed_function(request):
     inps, func, outs = request.param
 
     class X(object):
@@ -41,16 +41,16 @@ def lazy_function(request):
 
 
 @pytest.yield_fixture()
-def dependency_graph(lazy_function):
-    inps = lazy_function.inputs
-    outs = lazy_function.outputs
-    # here i build dependency graph on my own, without using @lazy_function
+def dependency_graph(delayed_function):
+    inps = delayed_function.inputs
+    outs = delayed_function.outputs
+    # here i build dependency graph on my own, without using @delayed_function
     # don't do this on your own!
     with dependency_graph_context("default"):
-        inp_dict = {key: get_lazy_value_type(value)() for key, value in inps.items()}
-        outs_tuple = tuple(get_lazy_value_type(x)() for x in outs)
-        register_function_call(inp_dict, LazyCaller(lazy_function), outs_tuple)
-        yield inp_dict, lazy_function, outs_tuple
+        inp_dict = {key: get_delayed_value_type(value)() for key, value in inps.items()}
+        outs_tuple = tuple(get_delayed_value_type(x)() for x in outs)
+        register_function_call(inp_dict, DelayedCaller(delayed_function), outs_tuple)
+        yield inp_dict, delayed_function, outs_tuple
 
 
 def test_run_local_container(dependency_graph):

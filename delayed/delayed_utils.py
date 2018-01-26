@@ -5,7 +5,7 @@ def validate_function(func):
     argspec = inspect.getfullargspec(func)
     if argspec.varargs or argspec.varkw:
         raise TypeError("Using varargs or varkwargs (for example, def myfunc(*args, **kwargs)) "
-                        "is forbidden for lazy functions")
+                        "is forbidden for delayed functions")
 
 
 def convert_to_python_return(outputs_tuple):

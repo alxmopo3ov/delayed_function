@@ -1,10 +1,10 @@
-from graph.dependency_graph import register_lazy_caller_node
+from graph.dependency_graph import register_delayed_caller_node
 
 
-class LazyCaller(object):
+class DelayedCaller(object):
     def __init__(self, func):
         self.func = func
-        self.__caller_id = register_lazy_caller_node(self)
+        self.__caller_id = register_delayed_caller_node(self)
 
     @property
     def caller_id(self):
@@ -14,5 +14,5 @@ class LazyCaller(object):
         return "{}[{}]".format(type(self).__name__, self.func.__name__)
 
 
-def generate_lazy_function_call(func):
-    return LazyCaller(func)
+def generate_delayed_function_call(func):
+    return DelayedCaller(func)

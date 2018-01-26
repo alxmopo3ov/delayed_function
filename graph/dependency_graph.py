@@ -6,23 +6,23 @@ import contextlib
 class DependencyGraph(SingletonBase, nx.DiGraph):
     def __init__(self, dependency_graph_id):
         self.dependency_graph_id = dependency_graph_id
-        self.lazy_values = set()
-        self.lazy_callers = set()
+        self.delayed_values = set()
+        self.delayed_callers = set()
         super(DependencyGraph, self).__init__(name="{}_{}".format(type(self).__name__, self.dependency_graph_id))
 
     def validate(self):
-        for n in self.lazy_values:
+        for n in self.delayed_values:
             assert set(self.predecessors(n)).\
                 union(set(self.successors(n))).\
-                issubset(self.lazy_callers), "All neighbours of lazy_value nodes must be lazy_callers"
-        for n in self.lazy_callers:
+                issubset(self.delayed_callers), "All neighbours of delayed_value nodes must be delayed_callers"
+        for n in self.delayed_callers:
             assert set(self.predecessors(n)).\
                 union(set(self.successors(n))).\
-                issubset(self.lazy_values), "All neighbours of lazy_caller nodes must be lazy_values"
+                issubset(self.delayed_values), "All neighbours of delayed_caller nodes must be delayed_values"
 
     def clear(self):
-        self.lazy_callers = set()
-        self.lazy_values = set()
+        self.delayed_callers = set()
+        self.delayed_values = set()
         super(DependencyGraph, self).clear()
 
 
@@ -51,23 +51,23 @@ def dependency_graph_context(dependency_graph_id):
     H.set_current_dependency_graph(prev)
 
 
-def register_lazy_value_node(node):
+def register_delayed_value_node(node):
     """
-    We execute this method only in LazyValueBase's __init__, hence we will always execute it for each instance only once
+    We execute this method only in DelayedValueBase's __init__, hence we will always execute it for each instance only once
     (unless you decide to break everything and execute it on your own)
     """
     H.dependency_graph.add_node(node)
-    H.dependency_graph.lazy_values.add(node)
+    H.dependency_graph.delayed_values.add(node)
 
 
-def register_lazy_caller_node(node):
+def register_delayed_caller_node(node):
     """
-    We execute this method only in LazyCaller's __init__, hence we will always execute it for each instance only once
+    We execute this method only in DelayedCaller's __init__, hence we will always execute it for each instance only once
     (unless you decide to break everything and execute it on your own)
     """
     H.dependency_graph.add_node(node)
-    H.dependency_graph.lazy_callers.add(node)
-    return len(H.dependency_graph.lazy_callers) - 1
+    H.dependency_graph.delayed_callers.add(node)
+    return len(H.dependency_graph.delayed_callers) - 1
 
 
 def register_function_call(inputs, func, outputs):
