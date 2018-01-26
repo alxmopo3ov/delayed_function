@@ -2,15 +2,13 @@ import functools
 import inspect
 import contextlib
 from copy import deepcopy
-from lazy.lazy_value import get_lazy_value_type, LazyValueBase
-from graph.dependency_graph import register_function_call, dependency_graph_context
+from lazy.lazy_value import get_lazy_value_type, LazyValueBase, convert_to_lazy_value
 from lazy.lazy_caller import generate_lazy_function_call
-from utils.type_check import do_type_check
 from lazy.lazy_utils import check_all_are_types, validate_function, convert_to_python_return
-from serialize.initialized_value_storage import initialized_value_storage
+from graph.dependency_graph import register_function_call, dependency_graph_context
+from utils.type_check import do_type_check
 
 
-# be default, we do not do any lazy evaluation so decorated functions can be used as usual
 LAZY_ENABLED = False
 
 
@@ -28,12 +26,6 @@ def generate_lazy_outputs(output_types):
         return tuple(get_lazy_value_type(x)() for x in output_types)
     else:
         return ()
-
-
-def convert_to_lazy_value(value):
-    lazy_value = get_lazy_value_type(type(value))()
-    initialized_value_storage[lazy_value] = value
-    return lazy_value
 
 
 def generate_lazy_inputs(values):

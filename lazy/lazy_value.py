@@ -1,6 +1,7 @@
 from functools import lru_cache
 import contracts
 from graph.dependency_graph import register_lazy_value_node
+from serialize.initialized_value_storage import initialized_value_storage
 
 
 class LazyValueBase(object):
@@ -30,3 +31,9 @@ def get_lazy_value_type(value_type):
     globals()[lazy_value_type.__name__] = lazy_value_type
     contracts.new_contract(lazy_value_type.__name__, lazy_value_type)
     return lazy_value_type
+
+
+def convert_to_lazy_value(value):
+    lazy_value = get_lazy_value_type(type(value))()
+    initialized_value_storage[lazy_value] = value
+    return lazy_value
