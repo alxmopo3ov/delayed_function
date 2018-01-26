@@ -1,7 +1,15 @@
-from lazy.lazy_value import LazyValueBase, get_lazy_value_type
+from lazy.lazy_value import LazyValueBase, get_lazy_value_type, convert_to_lazy_value
+from serialize.initialized_value_storage import initialized_value_storage
 from graph.dependency_graph import H
 import pytest
 import contracts
+
+
+@pytest.yield_fixture()
+def storage():
+    initialized_value_storage.clear()
+    yield initialized_value_storage
+    initialized_value_storage.clear()
 
 
 @pytest.yield_fixture()
@@ -41,3 +49,10 @@ def test_new_contracts_created():
 
     with pytest.raises(contracts.ContractNotRespected):
         learn(Task(), "shshs")
+
+
+def test_convert_to_lazy(storage):
+    value = u'156'
+    lazy_value = convert_to_lazy_value(value)
+    assert storage[lazy_value] == value
+    assert isinstance(lazy_value, LazyValueBase)

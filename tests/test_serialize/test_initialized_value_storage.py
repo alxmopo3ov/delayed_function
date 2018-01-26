@@ -1,19 +1,17 @@
 from serialize.initialized_value_storage import initialized_value_storage
-from serialize.serialization_handler import SerializationHandler
 import pytest
 
 
-def test_add_value():
-    key = 1
-    value = '100500'
-    initialized_value_storage[key] = value
-    assert initialized_value_storage[key] == SerializationHandler().serialize(value)
-    assert len(initialized_value_storage) == 1
+@pytest.yield_fixture()
+def storage():
+    initialized_value_storage.clear()
+    yield initialized_value_storage
+    initialized_value_storage.clear()
 
 
-def test_remove_value():
+def test_add_value(storage):
     key = 1
     value = '100500'
-    initialized_value_storage[key] = value
-    with pytest.raises(RuntimeError):
-        del initialized_value_storage[key]
+    storage[key] = value
+    assert storage[key] == value
+    assert len(storage) == 1

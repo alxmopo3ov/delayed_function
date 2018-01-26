@@ -6,7 +6,6 @@ import shutil
 import os
 import getpass
 
-
 executable_reference = """import {tempdir}
 from some_test_root.environment import Environment
 from some_test_root.executable_container.nirvana_container import NirvanaContainer

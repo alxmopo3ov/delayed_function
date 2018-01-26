@@ -15,7 +15,7 @@ def test_convert_to_python_return():
 
 
 def test_validate_function():
-    def proper(x, y, z = 1):
+    def proper(x, y, z=1):
         pass
     validate_function(proper)
 
