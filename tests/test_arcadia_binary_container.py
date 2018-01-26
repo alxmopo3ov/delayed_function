@@ -9,13 +9,13 @@ import getpass
 
 executable_reference = """import {tempdir}
 from some_test_root.environment import Environment
-from some_test_root.executable_container.container_factory import build_container
+from some_test_root.executable_container.nirvana_container import NirvanaContainer
 
 if __name__ == "__main__":
     env = Environment()
     container_type = env.container_type
     function_name = env.function_name
-    container = build_container(container_type, {tempdir}.testing_function)
+    container = NirvanaContainer({tempdir}.testing_function)
     container.run()
 """
 

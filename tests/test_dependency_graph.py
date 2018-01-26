@@ -1,5 +1,5 @@
 from graph.dependency_graph import H, register_lazy_value_node, \
-    register_function_call, register_lazy_caller_node
+    register_function_call, register_lazy_caller_node, dependency_graph_context, DependencyGraph
 import pytest
 
 
@@ -86,3 +86,13 @@ def test_wrong_value_graph_validation(dependency_graph):
     dependency_graph.add_edge(1, 2)
     with pytest.raises(AssertionError):
         dependency_graph.validate()
+
+
+def test_context(dependency_graph):
+    with dependency_graph_context("some_graph"):
+        register_lazy_value_node(1)
+        register_lazy_value_node(2)
+        assert not dependency_graph.lazy_values
+        assert not dependency_graph.nodes()
+
+    assert set(DependencyGraph("some_graph").nodes()) == {1, 2}
