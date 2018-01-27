@@ -21,6 +21,25 @@ def build_graph():
     H.dependency_graph.clear()
 
 
+@pytest.yield_fixture()
+def single_caller():
+    H.dependency_graph.clear()
+    register_delayed_caller_node(1)
+    yield
+    H.dependency_graph.clear()
+
+
+@pytest.yield_fixture()
+def single_node():
+    H.dependency_graph.clear()
+    register_delayed_value_node(0)
+    register_delayed_caller_node(1)
+    register_delayed_value_node(2)
+    register_function_call(dict(x=0), 1, (2, ))
+    yield
+    H.dependency_graph.clear()
+
+
 def test_computation_graph(build_graph):
     G = convert_dependency_graph_to_computation_graph()
     assert sorted(G.nodes()) == [70, 71, 72, 73, 101, 102, 103, 104]
@@ -32,3 +51,15 @@ def test_computation_graph(build_graph):
         (103, 104),
         (102, 104),
     ])
+
+
+def test_single_caller(single_caller):
+    G = convert_dependency_graph_to_computation_graph()
+    assert G.nodes() == [1]
+    assert G.edges() == []
+
+
+def test_single_node(single_node):
+    G = convert_dependency_graph_to_computation_graph()
+    assert sorted(G.nodes()) == [1]
+    assert sorted(G.edges()) == []
