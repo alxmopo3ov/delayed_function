@@ -32,7 +32,7 @@ def generate_delayed_inputs(values):
     return {key: value if isinstance(value, DelayedValueBase) else convert_to_delayed_value(value) for key, value in values.items()}
 
 
-def delayed_function(outputs, inputs, container_params=None, environment_params=None):
+def delayed_function(outputs, inputs):
     check_all_are_types('outputs', outputs)
     check_all_are_types('inputs', list(inputs.values()))
 
@@ -58,8 +58,6 @@ def delayed_function(outputs, inputs, container_params=None, environment_params=
             else:
                 return func(*args, **kwargs)
 
-        delayed_function_wrapper.container_params = deepcopy(container_params)
-        delayed_function_wrapper.environment_params = deepcopy(environment_params)
         delayed_function_wrapper.inputs = deepcopy(inputs)
         delayed_function_wrapper.outputs = deepcopy(outputs)
         delayed_function_wrapper.func = func

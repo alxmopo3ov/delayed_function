@@ -40,8 +40,6 @@ def test_delayed_function_has_necessary_attrs():
     def func(x, y, z=3.4):
         return x + 1, y + 2, z + 3
 
-    assert hasattr(func, 'container_params')
-    assert hasattr(func, 'environment_params')
     assert func.inputs == dict(x=Number, y=Number, z=Number)
     assert func.outputs == (Number, Number, Number)
     assert func.func == inspect.unwrap(func)
