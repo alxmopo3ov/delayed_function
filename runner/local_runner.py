@@ -3,7 +3,23 @@ from serialize.initialized_value_storage import initialized_value_storage
 from serialize.serialization_handler import SerializationHandler
 from executable_container.local_container import LocalContainer
 from graph.dependency_graph import H, dependency_graph_context
+from delayed.delayed_value import DelayedListBase, DelayedDictBase
 import networkx as nx
+
+
+def build_inputs(node):
+    res = {}
+    input_types = node.func.inputs
+    # collect all inputs for names dictionaries
+    for inp in H.dependency_graph.predecessors(node):
+        input_name = H.dependency_graph.get_edge_data(inp, node)['input_name']
+        if issubclass(input_types[input_name], (DelayedListBase, DelayedDictBase)):
+            input_key = H.dependency_graph.get_edge_data(inp, node)['input_key']
+            res.setdefault(input_name, {})[input_key] = inp
+        else:
+            res[input_name] = inp
+
+    return res
 
 
 def run_local(dependency_graph_id):
@@ -22,8 +38,7 @@ def run_local(dependency_graph_id):
 
         # iterate over delayed callers
         for node in nx.dfs_postorder_nodes(reversed_graph):
-            inputs_dict = {H.dependency_graph.get_edge_data(inp, node)['input_name']: inp
-                           for inp in H.dependency_graph.predecessors(node)}
+            inputs_dict = build_inputs(node)
             outputs_dict = {H.dependency_graph.get_edge_data(node, out)['output_id']: out
                             for out in H.dependency_graph.successors(node)}
             container = LocalContainer(inputs_dict, node.func, outputs_dict, evaluated_serialized)

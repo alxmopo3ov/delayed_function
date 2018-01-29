@@ -76,7 +76,11 @@ def register_function_call(inputs, func, outputs):
     outputs = func(**inputs)
     """
     for input_name, input_value in inputs.items():
-        H.dependency_graph.add_edge(input_value, func, {'input_name': input_name})
+        if isinstance(input_value, dict):
+            for key, val in input_value.items():
+                H.dependency_graph.add_edge(val, func, {'input_name': input_name, 'input_key': key})
+        else:
+            H.dependency_graph.add_edge(input_value, func, {'input_name': input_name})
 
     for i, out in enumerate(outputs):
         H.dependency_graph.add_edge(func, out, {'output_id': i})

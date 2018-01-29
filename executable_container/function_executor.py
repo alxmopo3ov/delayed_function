@@ -1,4 +1,5 @@
 from serialize import SerializationHandler
+from delayed.delayed_value import DelayedDictBase, DelayedListBase
 
 
 def convert_return_value_to_tuple(outputs):
@@ -41,7 +42,13 @@ class FunctionExecutor(object):
         res = {}
         for name, value_type in self.container_inputs.items():
             serialized = self.get_serialized_input(name)
-            res[name] = self.serialization_handler.deserialize(serialized, value_type)
+            if issubclass(value_type, DelayedListBase):
+                res[name] = [self.serialization_handler.deserialize(x, value_type.value_type) for x in serialized]
+            elif issubclass(value_type, DelayedDictBase):
+                res[name] = {key: self.serialization_handler.deserialize(val, value_type.value_type)
+                             for key, val in serialized.items()}
+            else:
+                res[name] = self.serialization_handler.deserialize(serialized, value_type)
         return res
 
     def run(self):
@@ -60,7 +67,7 @@ class FunctionExecutor(object):
 
     def get_serialized_input(self, input_name):
         """
-        Read serialized value of input with input_name from storage
+        Read serialized value of input with input_name from storage.
         """
         return self.local_data_storage.inputs[input_name]
 
