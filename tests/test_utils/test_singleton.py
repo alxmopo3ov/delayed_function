@@ -1,8 +1,8 @@
-from utils.singleton import Singleton
+from utils.singleton import SingletonBase
 
 
 def test__singleton_without_args():
-    class A(metaclass=Singleton):
+    class A(SingletonBase):
         pass
 
     a, b, c = A(), A(), A()
@@ -12,7 +12,7 @@ def test__singleton_without_args():
 
 
 def test__singleton_with_args():
-    class B(metaclass=Singleton):
+    class B(SingletonBase):
 
         def __init__(self, *args, **kwargs):
             self.args = args

@@ -1,5 +1,8 @@
 from serialize.serializer_base import SerializerBase
-import cloudpickle
+try:
+    import ads.nirvana.automl.contrib_temp.cloudpickle as cloudpickle
+except ImportError:
+    import cloudpickle
 import yaml
 from yaml.representer import RepresenterError
 

@@ -1,6 +1,7 @@
 import abc
 import itertools
 from pprint import pformat
+from utils.compatibility import with_metaclass
 
 
 class ABCPropertyCheckMeta(abc.ABCMeta):
@@ -35,5 +36,5 @@ class ABCPropertyCheckMeta(abc.ABCMeta):
         return cls
 
 
-class ABCProp(metaclass=ABCPropertyCheckMeta):
+class ABCProp(with_metaclass(ABCPropertyCheckMeta)):
     pass

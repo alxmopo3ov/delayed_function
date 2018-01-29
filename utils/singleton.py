@@ -1,4 +1,4 @@
-from functools import lru_cache
+from utils.compatibility import lru_cache, with_metaclass
 
 
 class Singleton(type):
@@ -8,5 +8,5 @@ class Singleton(type):
         return new_cls
 
 
-class SingletonBase(metaclass=Singleton):
+class SingletonBase(with_metaclass(Singleton)):
     pass

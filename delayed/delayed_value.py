@@ -1,4 +1,4 @@
-from functools import lru_cache
+from utils.compatibility import lru_cache
 import contracts
 from graph.dependency_graph import register_delayed_value_node
 from serialize.initialized_value_storage import initialized_value_storage
