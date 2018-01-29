@@ -1,4 +1,4 @@
-PROGRAM({program_name})
+ya_make_template = """PROGRAM({program_name})
 
 OWNER({owner})
 
@@ -12,3 +12,4 @@ PEERDIR(
 )
 
 END()
+"""

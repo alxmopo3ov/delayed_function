@@ -2,40 +2,12 @@ import os
 import getpass
 import json
 from arcadia_binary_container.package_template import fill_package_template
+from arcadia_binary_container.executable_template import executable_template
+from arcadia_binary_container.ya_make_template import ya_make_template
 
 
 auto_ml_dirname = 'auto_ml_executable_dir'
 nirvana_auto_ml_container_program_name = 'nirvana_auto_ml_container'
-
-
-ya_make_template = """PROGRAM({program_name})
-
-OWNER({owner})
-
-PY_SRCS(
-    __main__.py
-)
-
-PEERDIR(
-    {auto_ml_root}
-    {library_root}
-)
-
-END()
-"""
-
-
-executable_template = """import {function_file}
-from {auto_ml_root}.environment import Environment
-from {auto_ml_root}.executable_container.nirvana_container import NirvanaContainer
-
-if __name__ == "__main__":
-    env = Environment()
-    container_type = env.container_type
-    function_name = env.function_name
-    container = NirvanaContainer({function_file}.{function_name})
-    container.run()
-"""
 
 
 def get_arcadia_root():
